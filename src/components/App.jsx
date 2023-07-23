@@ -16,7 +16,22 @@ export class App extends Component {
     ],
     filter: '',
   };
-  // -----------------------------------------------------------------------
+  // -------життєвий цикл---------------------
+  componentDidMount() {
+    const contactsJSON = localStorage.getItem('contacts');
+    const localContacts = JSON.parse(contactsJSON);
+
+    if (this.state.contacts !== localContacts && localContacts !== null) {
+      this.setState({ contacts: localContacts });
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.contacts !== this.state.contacts) {
+      localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
+    }
+  }
+  // --------Надіслати форму---------------------------------------------------------------
   onFormSubmit = newContact => {
     const copyNewContact = { ...newContact };
 
@@ -25,13 +40,13 @@ export class App extends Component {
       return { contacts: [...prevState.contacts, copyNewContact] };
     });
   };
-  // ------------------------------------------------------------------------
+  // --------Змінити фільтр----------------------------------------------------------------
   onFilterChange = filterWord => {
     this.setState({
       filter: filterWord,
     });
   };
-  // ------------------------------------------------------------------------
+  // --------фільтр контакт----------------------------------------------------------------
   filterContacts() {
     const normalizedFilter = this.state.filter.toLowerCase();
     return this.state.contacts.filter(contact =>
